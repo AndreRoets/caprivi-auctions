@@ -17,6 +17,7 @@ class HomeController extends Controller
             'corexSite' => $site,
             'liveAuctions' => $site ? array_slice($corex->auctionsOrEmpty('live'), 0, 3) : [],
             'upcomingAuctions' => $site ? array_slice($corex->auctionsOrEmpty('upcoming'), 0, 3) : [],
+            'corexError' => $corex->lastError(),
             'seo' => $seo->forPage('home'),
         ]);
     }

@@ -21,6 +21,8 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
  */
 class CorexClient
 {
+    private ?string $lastError = null;
+
     public function __construct(private Request $request, private BuyerSession $buyer) {}
 
     public function isConfigured(): bool
@@ -35,7 +37,7 @@ class CorexClient
      */
     public function site(): array
     {
-        return Cache::remember('corex.site', config('services.corex.cache_seconds'), fn () => $this->get('/site', withBuyer: false)['data'] ?? []);
+        return Cache::remember('corex.site', config('services.corex.cache_seconds'), fn () => ($site = $this->get('/site', withBuyer: false))['data'] ?? $site);
     }
 
     /**
@@ -57,12 +59,16 @@ class CorexClient
     public function siteOrNull(): ?array
     {
         if (! $this->isConfigured()) {
+            $this->fail('CoreX is not configured: COREX_AUCTIONS_API and COREX_API_KEY must both be set in .env', CorexException::unavailable());
+
             return null;
         }
 
         try {
             return $this->site() ?: null;
-        } catch (CorexException) {
+        } catch (CorexException $exception) {
+            $this->fail('CoreX /site failed', $exception);
+
             return null;
         }
     }
@@ -74,9 +80,26 @@ class CorexClient
     {
         try {
             return $this->auctions($phase);
-        } catch (CorexException) {
+        } catch (CorexException $exception) {
+            $this->fail("CoreX auction list ({$phase}) failed", $exception);
+
             return [];
         }
+    }
+
+    /**
+     * The visitor-safe message for the first CoreX failure on this request, if any.
+     */
+    public function lastError(): ?string
+    {
+        return $this->lastError;
+    }
+
+    private function fail(string $context, CorexException $exception): void
+    {
+        $this->lastError ??= $exception->getMessage();
+
+        Log::error($context, ['code' => $exception->errorCode, 'status' => $exception->status]);
     }
 
     /**

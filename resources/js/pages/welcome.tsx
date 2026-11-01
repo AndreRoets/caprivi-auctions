@@ -14,6 +14,7 @@ interface WelcomeProps {
     corexSite: CorexSite | null;
     liveAuctions: AuctionCardData[];
     upcomingAuctions: AuctionCardData[];
+    corexError: string | null;
 }
 
 const steps = [
@@ -204,13 +205,19 @@ function Documents() {
     );
 }
 
-export default function Welcome({ corexSite, liveAuctions, upcomingAuctions }: WelcomeProps) {
+export default function Welcome({ corexSite, liveAuctions, upcomingAuctions, corexError }: WelcomeProps) {
     const site = useSite();
     const hasAuctions = liveAuctions.length + upcomingAuctions.length > 0;
 
     return (
         <SiteLayout>
             <Hero />
+
+            {corexError && (
+                <div role="alert" className="mx-auto my-6 max-w-3xl rounded-xl border border-red-200 bg-red-50 px-5 py-4 text-sm text-red-800">
+                    {corexError}
+                </div>
+            )}
 
             <AuctionsTeaser liveAuctions={liveAuctions} upcomingAuctions={upcomingAuctions} />
 
