@@ -1,4 +1,5 @@
 import ContactModal from '@/components/site/contact-modal';
+import Seo from '@/components/site/seo';
 import SiteFooter from '@/components/site/site-footer';
 import SiteHeader from '@/components/site/site-header';
 import { createContext, ReactNode, useContext, useState } from 'react';
@@ -25,6 +26,7 @@ export default function SiteLayout({ children, contactSubjects, lotId }: SiteLay
     return (
         <ContactContext.Provider value={{ openContact: () => setContactOpen(true) }}>
             <div className="bg-sand text-ink min-h-screen font-sans antialiased">
+                <Seo />
                 <SiteHeader />
                 <main>{children}</main>
                 <SiteFooter />

@@ -1,14 +1,10 @@
-export const company = {
-    name: 'Caprivi Auctions',
-    tagline: 'Smart Bid. Smart Buy.',
-    legalName: 'Caprivi Properties (Pty) Ltd t/a Caprivi Auctions & Bids',
-    parentSite: 'https://capriviproperties.co.za',
-    address: '70 Commissioner Street, Kempton Park, Gauteng',
-    phones: ['010 001 9469', '010 495 6216', '082 348 4595'],
-    whatsapp: '068 452 2930',
-    emails: ['info@capriviauctions.co.za', 'sales@capriviauctions.co.za'],
-    liveAuctionsUrl: 'https://bidpro.co.za',
-};
+import { type SharedData, type SiteSettings } from '@/types';
+import { usePage } from '@inertiajs/react';
+
+/** Contact details and links managed from the admin "Website details" screen. */
+export function useSite(): SiteSettings {
+    return usePage<SharedData>().props.site;
+}
 
 export function telHref(phone: string): string {
     return `tel:${phone.replace(/\s+/g, '')}`;

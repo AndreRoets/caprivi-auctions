@@ -4,9 +4,9 @@ import FaqList from '@/components/site/faq-list';
 import { StatusBadge } from '@/components/site/lot-card';
 import SellerQuestionnaire from '@/components/site/seller-questionnaire';
 import SiteLayout, { useContactModal } from '@/layouts/site-layout';
-import { auctionTypeLabels, company, formatDateTime, formatRand } from '@/lib/site';
+import { auctionTypeLabels, formatDateTime, formatRand, telHref, useSite } from '@/lib/site';
 import { type Lot } from '@/types';
-import { Head, Link } from '@inertiajs/react';
+import { Link } from '@inertiajs/react';
 import { CalendarClock, FileText, Gavel, ShieldCheck, TrendingUp, Users } from 'lucide-react';
 import { ReactNode } from 'react';
 
@@ -231,15 +231,10 @@ function Documents() {
 }
 
 export default function Welcome({ featuredLot, contactSubjects }: WelcomeProps) {
+    const site = useSite();
+
     return (
         <SiteLayout contactSubjects={contactSubjects}>
-            <Head title="Sell at auction">
-                <meta
-                    name="description"
-                    content="Caprivi Auctions runs online, live, hybrid and sealed-tender property auctions. Complete the seller questionnaire for a free valuation."
-                />
-            </Head>
-
             <Hero />
 
             {featuredLot && <FeaturedLot lot={featuredLot} />}
@@ -300,11 +295,8 @@ export default function Welcome({ featuredLot, contactSubjects }: WelcomeProps) 
                     <p className="font-display text-ink flex items-center gap-3 text-2xl">
                         <Users className="size-7" /> Prefer to talk it through?
                     </p>
-                    <a
-                        href={`tel:${company.phones[0].replace(/\s+/g, '')}`}
-                        className="bg-ink hover:bg-ink-soft rounded-full px-6 py-3 font-medium text-white"
-                    >
-                        Call {company.phones[0]}
+                    <a href={telHref(site.main_phone)} className="bg-ink hover:bg-ink-soft rounded-full px-6 py-3 font-medium text-white">
+                        Call {site.main_phone}
                     </a>
                 </div>
             </section>

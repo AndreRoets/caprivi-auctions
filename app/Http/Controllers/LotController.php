@@ -5,13 +5,14 @@ namespace App\Http\Controllers;
 use App\Http\Resources\LotResource;
 use App\Models\ContactEnquiry;
 use App\Models\Lot;
+use App\Support\SeoMeta;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class LotController extends Controller
 {
-    public function index(Request $request): Response
+    public function index(Request $request, SeoMeta $seo): Response
     {
         $filters = $request->validate([
             'province' => ['nullable', 'string', 'max:60'],
@@ -34,14 +35,16 @@ class LotController extends Controller
             'provinces' => Lot::query()->onAuction()->distinct()->orderBy('province')->pluck('province'),
             'propertyTypes' => Lot::query()->onAuction()->distinct()->orderBy('property_type')->pluck('property_type'),
             'contactSubjects' => ContactEnquiry::SUBJECTS,
+            'seo' => $seo->forPage('lots'),
         ]);
     }
 
-    public function show(Lot $lot): Response
+    public function show(Lot $lot, SeoMeta $seo): Response
     {
         return Inertia::render('lots/show', [
             'lot' => LotResource::make($lot)->resolve(),
             'contactSubjects' => ContactEnquiry::SUBJECTS,
+            'seo' => $seo->forLot($lot),
         ]);
     }
 }

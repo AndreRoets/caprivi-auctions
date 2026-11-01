@@ -1,9 +1,9 @@
 import { inputClass } from '@/components/site/form-field';
 import LotCard from '@/components/site/lot-card';
 import SiteLayout, { useContactModal } from '@/layouts/site-layout';
-import { company, telHref, whatsappHref } from '@/lib/site';
+import { telHref, useSite, whatsappHref } from '@/lib/site';
 import { type Lot } from '@/types';
-import { Head, Link, router } from '@inertiajs/react';
+import { Link, router } from '@inertiajs/react';
 import { Mail, MapPin, MessageCircle, Phone } from 'lucide-react';
 
 interface LotsIndexProps {
@@ -20,6 +20,7 @@ function applyFilters(filters: { province: string; type: string }) {
 }
 
 function AgentPanel() {
+    const site = useSite();
     const { openContact } = useContactModal();
 
     return (
@@ -41,36 +42,40 @@ function AgentPanel() {
                     </button>
                 </div>
                 <ul className="grid gap-3 text-sm">
+                    {site.mobile_phone && (
+                        <li>
+                            <a
+                                href={telHref(site.mobile_phone)}
+                                className="border-sand-dark hover:bg-sand flex items-center gap-3 rounded-xl border p-4"
+                            >
+                                <Phone className="text-brass-dark size-5" /> Mobile: {site.mobile_phone}
+                            </a>
+                        </li>
+                    )}
                     <li>
-                        <a href={telHref(company.phones[2])} className="border-sand-dark hover:bg-sand flex items-center gap-3 rounded-xl border p-4">
-                            <Phone className="text-brass-dark size-5" /> Mobile: {company.phones[2]}
+                        <a href={telHref(site.main_phone)} className="border-sand-dark hover:bg-sand flex items-center gap-3 rounded-xl border p-4">
+                            <Phone className="text-brass-dark size-5" /> Auctions office: {site.main_phone}
                         </a>
                     </li>
+                    {site.whatsapp && (
+                        <li>
+                            <a
+                                href={whatsappHref(site.whatsapp)}
+                                target="_blank"
+                                rel="noopener"
+                                className="border-sand-dark hover:bg-sand flex items-center gap-3 rounded-xl border p-4"
+                            >
+                                <MessageCircle className="text-brass-dark size-5" /> WhatsApp: {site.whatsapp}
+                            </a>
+                        </li>
+                    )}
                     <li>
-                        <a href={telHref(company.phones[0])} className="border-sand-dark hover:bg-sand flex items-center gap-3 rounded-xl border p-4">
-                            <Phone className="text-brass-dark size-5" /> Auctions office: {company.phones[0]}
-                        </a>
-                    </li>
-                    <li>
-                        <a
-                            href={whatsappHref(company.whatsapp)}
-                            target="_blank"
-                            rel="noopener"
-                            className="border-sand-dark hover:bg-sand flex items-center gap-3 rounded-xl border p-4"
-                        >
-                            <MessageCircle className="text-brass-dark size-5" /> WhatsApp: {company.whatsapp}
-                        </a>
-                    </li>
-                    <li>
-                        <a
-                            href={`mailto:${company.emails[0]}`}
-                            className="border-sand-dark hover:bg-sand flex items-center gap-3 rounded-xl border p-4"
-                        >
-                            <Mail className="text-brass-dark size-5" /> {company.emails[0]}
+                        <a href={`mailto:${site.emails[0]}`} className="border-sand-dark hover:bg-sand flex items-center gap-3 rounded-xl border p-4">
+                            <Mail className="text-brass-dark size-5" /> {site.emails[0]}
                         </a>
                     </li>
                     <li className="border-sand-dark flex items-center gap-3 rounded-xl border p-4">
-                        <MapPin className="text-brass-dark size-5" /> {company.address}
+                        <MapPin className="text-brass-dark size-5" /> {site.address}
                     </li>
                 </ul>
             </div>
@@ -79,6 +84,7 @@ function AgentPanel() {
 }
 
 export default function LotsIndex({ lots, filters, provinces, propertyTypes, contactSubjects }: LotsIndexProps) {
+    const site = useSite();
     const countsByProvince = lots.reduce<Record<string, number>>((counts, lot) => {
         counts[lot.province] = (counts[lot.province] ?? 0) + 1;
 
@@ -87,8 +93,6 @@ export default function LotsIndex({ lots, filters, provinces, propertyTypes, con
 
     return (
         <SiteLayout contactSubjects={contactSubjects}>
-            <Head title="Property on auction" />
-
             <section className="bg-ink text-white">
                 <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6">
                     <p className="text-brass text-xs font-semibold tracking-[0.25em] uppercase">On auction now</p>
@@ -98,7 +102,7 @@ export default function LotsIndex({ lots, filters, provinces, propertyTypes, con
                     </p>
                     <div className="mt-8 flex flex-wrap gap-3">
                         <a
-                            href={company.liveAuctionsUrl}
+                            href={site.live_auctions_url}
                             target="_blank"
                             rel="noopener"
                             className="bg-brass text-ink rounded-full px-6 py-3 font-medium hover:bg-white"

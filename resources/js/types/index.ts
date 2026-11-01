@@ -26,7 +26,37 @@ export interface SharedData {
     quote: { message: string; author: string };
     auth: Auth;
     flash: { success: string | null };
+    site: SiteSettings;
+    seo?: SeoMeta;
     [key: string]: unknown;
+}
+
+export interface SiteSettings {
+    company_name: string;
+    tagline: string | null;
+    legal_name: string;
+    address: string;
+    main_phone: string;
+    mobile_phone: string | null;
+    extra_phones: string[];
+    whatsapp: string | null;
+    emails: string[];
+    live_auctions_url: string;
+    parent_site_url: string | null;
+    facebook_url: string | null;
+    instagram_url: string | null;
+    linkedin_url: string | null;
+    youtube_url: string | null;
+    /** Every public phone number, main number first. */
+    phones: string[];
+}
+
+export interface SeoMeta {
+    title: string;
+    description: string;
+    image: string;
+    url: string;
+    type: string;
 }
 
 export type LotStatus = 'upcoming' | 'open' | 'closed' | 'sold';

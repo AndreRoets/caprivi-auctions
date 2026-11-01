@@ -1,5 +1,5 @@
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { company, telHref } from '@/lib/site';
+import { telHref, useSite } from '@/lib/site';
 import { useForm } from '@inertiajs/react';
 import { CheckCircle2 } from 'lucide-react';
 import { FormEventHandler, useState } from 'react';
@@ -14,6 +14,7 @@ interface ContactModalProps {
 }
 
 export default function ContactModal({ open, onOpenChange, subjects, lotId, defaultSubject }: ContactModalProps) {
+    const site = useSite();
     const [sent, setSent] = useState(false);
     const { data, setData, post, processing, errors, reset } = useForm({
         lot_id: lotId ?? null,
@@ -50,8 +51,8 @@ export default function ContactModal({ open, onOpenChange, subjects, lotId, defa
                     <DialogTitle className="font-display text-2xl">Speak to an auctioneer</DialogTitle>
                     <DialogDescription>
                         Call us on{' '}
-                        <a className="text-brass-dark font-medium underline" href={telHref(company.phones[0])}>
-                            {company.phones[0]}
+                        <a className="text-brass-dark font-medium underline" href={telHref(site.main_phone)}>
+                            {site.main_phone}
                         </a>{' '}
                         or send a message and we'll get back to you.
                     </DialogDescription>

@@ -4,7 +4,7 @@ import LotImage from '@/components/site/lot-image';
 import SiteLayout, { useContactModal } from '@/layouts/site-layout';
 import { auctionTypeLabels, formatDateTime, formatRand } from '@/lib/site';
 import { type Lot } from '@/types';
-import { Head, Link } from '@inertiajs/react';
+import { Link } from '@inertiajs/react';
 import { ArrowLeft, Check, Gavel, MapPin } from 'lucide-react';
 
 interface LotShowProps {
@@ -38,10 +38,6 @@ export default function LotShow({ lot, contactSubjects }: LotShowProps) {
 
     return (
         <SiteLayout contactSubjects={contactSubjects} lotId={lot.id}>
-            <Head title={lot.title}>
-                <meta name="description" content={lot.summary} />
-            </Head>
-
             <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
                 <Link href={route('lots.index')} className="text-brass-dark inline-flex items-center gap-1 text-sm font-medium hover:underline">
                     <ArrowLeft className="size-4" /> All property on auction
