@@ -2,7 +2,7 @@ import { Field, inputClass } from '@/components/site/form-field';
 import SiteLayout from '@/layouts/site-layout';
 import { formatDate, formatDateTime } from '@/lib/corex';
 import { type AuctionDetail, type RegistrationForm } from '@/types/corex';
-import { Link, useForm } from '@inertiajs/react';
+import { Head, Link, useForm } from '@inertiajs/react';
 import { ArrowLeft, FileCheck2, Upload } from 'lucide-react';
 import { FormEventHandler } from 'react';
 
@@ -55,6 +55,7 @@ export default function RegisterToBid({ auction, registration }: { auction: Auct
 
     return (
         <SiteLayout>
+            <Head title={`Register to bid – ${auction.title}`} />
             <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6">
                 <Link
                     href={`/auctions/${auction.id}`}

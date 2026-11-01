@@ -105,13 +105,16 @@ export function AuctionCard({ auction }: { auction: AuctionCardData }) {
     );
 }
 
+/** Keeps an amount on one line (non-breaking spaces), so a range only wraps at the dash. */
+const unbroken = (amount: number | null) => formatRand(amount).replace(/ /g, ' ');
+
 export function guidePrice(lot: Pick<LotCardData, 'guide_price_min' | 'guide_price_max'>): string | null {
     if (lot.guide_price_min && lot.guide_price_max) {
-        return `${formatRand(lot.guide_price_min)} – ${formatRand(lot.guide_price_max)}`;
+        return `${unbroken(lot.guide_price_min)} – ${unbroken(lot.guide_price_max)}`;
     }
 
     if (lot.guide_price_min || lot.guide_price_max) {
-        return formatRand(lot.guide_price_min ?? lot.guide_price_max);
+        return unbroken(lot.guide_price_min ?? lot.guide_price_max);
     }
 
     return null;

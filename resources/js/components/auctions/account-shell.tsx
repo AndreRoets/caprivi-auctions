@@ -1,4 +1,5 @@
 import SiteLayout from '@/layouts/site-layout';
+import { Head } from '@inertiajs/react';
 import { ReactNode } from 'react';
 
 /** Narrow centred card used by the buyer login, sign-up and password pages. */
@@ -15,6 +16,7 @@ export default function AccountShell({
 }) {
     return (
         <SiteLayout>
+            <Head title={title} />
             <div className="mx-auto w-full max-w-md px-4 py-14 sm:px-6">
                 <h1 className="font-display text-ink text-center text-4xl">{title}</h1>
                 {intro && <p className="mt-3 text-center text-slate-600">{intro}</p>}

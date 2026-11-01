@@ -18,9 +18,15 @@ interface PhotoGalleryProps {
  */
 export default function PhotoGallery({ photos, title, index, onIndexChange }: PhotoGalleryProps) {
     const touchStartX = useRef<number | null>(null);
+    const opener = useRef<HTMLElement | null>(null);
     const count = photos.length;
     const open = index !== null && count > 0;
     const current = index ?? 0;
+
+    // The gallery is opened from several buttons, so remember which one to return focus to.
+    if (open && opener.current === null && document.activeElement instanceof HTMLElement && document.activeElement !== document.body) {
+        opener.current = document.activeElement;
+    }
 
     const go = (delta: number) => onIndexChange((current + delta + count) % count);
 
@@ -41,7 +47,11 @@ export default function PhotoGallery({ photos, title, index, onIndexChange }: Ph
                 <DialogPrimitive.Content
                     className="fixed inset-0 z-50 flex flex-col text-white outline-none"
                     onKeyDown={onKeyDown}
-                    onPointerDownOutside={() => onIndexChange(null)}
+                    onCloseAutoFocus={(event) => {
+                        event.preventDefault();
+                        opener.current?.focus();
+                        opener.current = null;
+                    }}
                     aria-describedby={undefined}
                 >
                     <div className="flex items-center justify-between gap-4 px-4 py-3">

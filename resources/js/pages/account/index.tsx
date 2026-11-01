@@ -3,7 +3,7 @@ import { Field, inputClass } from '@/components/site/form-field';
 import SiteLayout from '@/layouts/site-layout';
 import { formatDate, formatRand } from '@/lib/corex';
 import { type BuyerAccount, type Registration } from '@/types/corex';
-import { Link, useForm } from '@inertiajs/react';
+import { Head, Link, useForm } from '@inertiajs/react';
 import { Download } from 'lucide-react';
 import { FormEventHandler, ReactNode } from 'react';
 
@@ -76,6 +76,7 @@ export default function BuyerAccountPage({ account }: { account: BuyerAccount })
 
     return (
         <SiteLayout>
+            <Head title="My account" />
             <div className="mx-auto grid max-w-5xl gap-12 px-4 py-12 sm:px-6">
                 <div>
                     <h1 className="font-display text-ink text-4xl">My account</h1>
