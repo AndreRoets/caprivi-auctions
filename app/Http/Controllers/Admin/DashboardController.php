@@ -4,31 +4,30 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\ContactEnquiry;
-use App\Models\Lot;
-use App\Models\SellerSubmission;
 use App\Models\User;
+use App\Support\Corex\CorexClient;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class DashboardController extends Controller
 {
-    public function __invoke(): Response
+    public function __invoke(CorexClient $corex): Response
     {
+        $site = $corex->siteOrNull();
+
         return Inertia::render('dashboard', [
+            'corex' => [
+                'configured' => $corex->isConfigured(),
+                'connected' => $site !== null,
+                'agencyName' => $site['agency']['name'] ?? null,
+                'liveAuctions' => $site ? count($corex->auctionsOrEmpty('live')) : null,
+                'upcomingAuctions' => $site ? count($corex->auctionsOrEmpty('upcoming')) : null,
+                'sellFormEnabled' => (bool) ($site['features']['seller_questionnaire'] ?? false),
+            ],
             'stats' => [
-                'sellerSubmissions' => SellerSubmission::query()->count(),
                 'contactEnquiries' => ContactEnquiry::query()->count(),
-                'lotsOnAuction' => Lot::query()->onAuction()->count(),
                 'users' => User::query()->count(),
             ],
-            'recentSubmissions' => SellerSubmission::query()
-                ->latest()
-                ->limit(5)
-                ->get(['id', 'name', 'phone', 'property_type', 'suburb', 'created_at'])
-                ->map(fn (SellerSubmission $submission) => [
-                    ...$submission->only(['id', 'name', 'phone', 'property_type', 'suburb']),
-                    'created_at' => $submission->created_at?->toIso8601String(),
-                ]),
             'recentEnquiries' => ContactEnquiry::query()
                 ->latest()
                 ->limit(5)

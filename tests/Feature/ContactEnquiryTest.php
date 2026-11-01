@@ -3,7 +3,6 @@
 namespace Tests\Feature;
 
 use App\Models\ContactEnquiry;
-use App\Models\Lot;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -33,16 +32,7 @@ class ContactEnquiryTest extends TestCase
             ->assertRedirect(route('home'))
             ->assertSessionHas('success');
 
-        $this->assertDatabaseHas('contact_enquiries', ['email' => 'thandi@example.com', 'lot_id' => null]);
-    }
-
-    public function test_enquiry_can_reference_a_lot(): void
-    {
-        $lot = Lot::factory()->create();
-
-        $this->post(route('contact-enquiries.store'), $this->validPayload(['lot_id' => $lot->id]));
-
-        $this->assertDatabaseHas('contact_enquiries', ['lot_id' => $lot->id]);
+        $this->assertDatabaseHas('contact_enquiries', ['email' => 'thandi@example.com']);
     }
 
     public function test_required_fields_are_validated(): void
@@ -53,10 +43,10 @@ class ContactEnquiryTest extends TestCase
         $this->assertDatabaseCount('contact_enquiries', 0);
     }
 
-    public function test_unknown_subject_and_lot_are_rejected(): void
+    public function test_unknown_subject_is_rejected(): void
     {
-        $this->post(route('contact-enquiries.store'), $this->validPayload(['subject' => 'Spam', 'lot_id' => 999]))
-            ->assertSessionHasErrors(['subject', 'lot_id']);
+        $this->post(route('contact-enquiries.store'), $this->validPayload(['subject' => 'Spam']))
+            ->assertSessionHasErrors('subject');
     }
 
     public function test_honeypot_blocks_bots(): void

@@ -9,15 +9,13 @@ interface ContactModalProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
     subjects: string[];
-    lotId?: number;
     defaultSubject?: string;
 }
 
-export default function ContactModal({ open, onOpenChange, subjects, lotId, defaultSubject }: ContactModalProps) {
+export default function ContactModal({ open, onOpenChange, subjects, defaultSubject }: ContactModalProps) {
     const site = useSite();
     const [sent, setSent] = useState(false);
     const { data, setData, post, processing, errors, reset } = useForm({
-        lot_id: lotId ?? null,
         name: '',
         phone: '',
         email: '',

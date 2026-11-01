@@ -30,7 +30,7 @@ class SeoSettingsControllerTest extends TestCase
             'seo_google_tag_manager_id' => null,
             'seo_pages' => [
                 'home' => ['title' => 'Property auctions in Gauteng', 'description' => 'Sell your home at auction.'],
-                'lots' => ['title' => 'Houses on auction', 'description' => 'Browse every lot.'],
+                'auctions' => ['title' => 'Houses on auction', 'description' => 'Browse every lot.'],
             ],
             ...$overrides,
         ];
@@ -57,7 +57,7 @@ class SeoSettingsControllerTest extends TestCase
             ->assertSee('https://www.googletagmanager.com/gtag/js?id=G-ABC1234567', false)
             ->assertSee('"@type":"RealEstateAgent"', false);
 
-        $this->get(route('lots.index'))
+        $this->get(route('auctions.index'))
             ->assertSee('<title inertia>Houses on auction - Caprivi Auctions</title>', false);
     }
 
@@ -67,7 +67,7 @@ class SeoSettingsControllerTest extends TestCase
             ->post(route('admin.seo.update'), $this->validPayload([
                 'seo_pages' => [
                     'home' => ['title' => 'Home', 'description' => '"><script>alert(1)</script>'],
-                    'lots' => ['title' => 'Lots', 'description' => 'Browse.'],
+                    'auctions' => ['title' => 'Lots', 'description' => 'Browse.'],
                 ],
             ]));
 
@@ -129,7 +129,7 @@ class SeoSettingsControllerTest extends TestCase
             ->post(route('admin.seo.update'), $this->validPayload([
                 'seo_pages' => [
                     'home' => ['title' => '', 'description' => 'Fine.'],
-                    'lots' => ['title' => 'Lots', 'description' => 'Fine.'],
+                    'auctions' => ['title' => 'Lots', 'description' => 'Fine.'],
                 ],
             ]))
             ->assertSessionHasErrors(['seo_pages.home.title' => 'Every page needs a title.']);

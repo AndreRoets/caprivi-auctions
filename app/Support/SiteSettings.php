@@ -22,7 +22,7 @@ class SiteSettings
     public const CONTACT_KEYS = [
         'company_name', 'tagline', 'legal_name', 'address',
         'main_phone', 'mobile_phone', 'extra_phones', 'whatsapp', 'emails',
-        'live_auctions_url', 'parent_site_url',
+        'parent_site_url',
         'facebook_url', 'instagram_url', 'linkedin_url', 'youtube_url',
     ];
 
@@ -33,7 +33,7 @@ class SiteSettings
      */
     public const SEO_PAGES = [
         'home' => 'Home page',
-        'lots' => 'Property on auction',
+        'auctions' => 'Auctions',
     ];
 
     /**
@@ -51,7 +51,6 @@ class SiteSettings
             'extra_phones' => ['010 495 6216'],
             'whatsapp' => '068 452 2930',
             'emails' => ['info@capriviauctions.co.za', 'sales@capriviauctions.co.za'],
-            'live_auctions_url' => 'https://bidpro.co.za',
             'parent_site_url' => 'https://capriviproperties.co.za',
             'facebook_url' => null,
             'instagram_url' => null,
@@ -72,9 +71,9 @@ class SiteSettings
                     'title' => 'Sell at auction',
                     'description' => 'Caprivi Auctions runs online, live, hybrid and sealed-tender property auctions. Complete the seller questionnaire for a free valuation.',
                 ],
-                'lots' => [
-                    'title' => 'Property on auction',
-                    'description' => 'Browse houses, land and commercial property currently on auction with Caprivi Auctions. Register, view by appointment and bid online.',
+                'auctions' => [
+                    'title' => 'Property auctions',
+                    'description' => 'Live and upcoming property auctions with Caprivi Auctions. Create a free account, register to bid and bid online.',
                 ],
             ],
         ];
@@ -87,7 +86,10 @@ class SiteSettings
     {
         $stored = Cache::rememberForever(self::CACHE_KEY, fn () => Setting::query()->pluck('value', 'key')->all());
 
-        return array_merge(self::defaults(), Arr::only($stored, array_keys(self::defaults())));
+        $settings = array_merge(self::defaults(), Arr::only($stored, array_keys(self::defaults())));
+        $settings['seo_pages'] = Arr::only($settings['seo_pages'], array_keys(self::SEO_PAGES)) + self::defaults()['seo_pages'];
+
+        return $settings;
     }
 
     public function get(string $key): mixed

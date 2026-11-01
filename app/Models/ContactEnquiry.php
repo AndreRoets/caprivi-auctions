@@ -5,7 +5,6 @@ namespace App\Models;
 use Database\Factories\ContactEnquiryFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ContactEnquiry extends Model
 {
@@ -29,19 +28,10 @@ class ContactEnquiry extends Model
      * @var list<string>
      */
     protected $fillable = [
-        'lot_id',
         'name',
         'phone',
         'email',
         'subject',
         'message',
     ];
-
-    /**
-     * @return BelongsTo<Lot, $this>
-     */
-    public function lot(): BelongsTo
-    {
-        return $this->belongsTo(Lot::class);
-    }
 }

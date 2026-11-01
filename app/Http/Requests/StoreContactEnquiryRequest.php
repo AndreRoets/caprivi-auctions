@@ -25,7 +25,6 @@ class StoreContactEnquiryRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'lot_id' => ['nullable', 'integer', 'exists:lots,id'],
             'name' => ['required', 'string', 'max:120'],
             'phone' => ['nullable', 'string', 'max:30'],
             'email' => ['required', 'email', 'max:190'],

@@ -49,6 +49,37 @@ class CorexClient
     }
 
     /**
+     * The site settings, or null when CoreX is not configured or not reachable,
+     * so public pages can still render without the auction sections.
+     *
+     * @return array<string, mixed>|null
+     */
+    public function siteOrNull(): ?array
+    {
+        if (! $this->isConfigured()) {
+            return null;
+        }
+
+        try {
+            return $this->site() ?: null;
+        } catch (CorexException) {
+            return null;
+        }
+    }
+
+    /**
+     * @return list<array<string, mixed>>
+     */
+    public function auctionsOrEmpty(string $phase): array
+    {
+        try {
+            return $this->auctions($phase);
+        } catch (CorexException) {
+            return [];
+        }
+    }
+
+    /**
      * @param  array<string, mixed>  $query
      * @return array<string, mixed>
      */

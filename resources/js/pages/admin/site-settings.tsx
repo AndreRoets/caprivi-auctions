@@ -35,7 +35,6 @@ export default function SiteSettingsPage({ settings }: { settings: EditableSetti
         extra_phones: settings.extra_phones.join('\n'),
         whatsapp: settings.whatsapp ?? '',
         emails: settings.emails.join('\n'),
-        live_auctions_url: settings.live_auctions_url,
         parent_site_url: settings.parent_site_url ?? '',
         facebook_url: settings.facebook_url ?? '',
         instagram_url: settings.instagram_url ?? '',
@@ -127,14 +126,6 @@ export default function SiteSettingsPage({ settings }: { settings: EditableSetti
                 <section className="space-y-5">
                     <HeadingSmall title="Links" />
                     <div className="grid gap-5 sm:grid-cols-2">
-                        <AdminField
-                            id="live_auctions_url"
-                            label="Live auctions / bidding platform"
-                            error={errors.live_auctions_url}
-                            hint="Used by “Live auctions” and “Register to bid”."
-                        >
-                            {text('live_auctions_url', { required: true, type: 'url' })}
-                        </AdminField>
                         <AdminField id="parent_site_url" label="Parent company website" error={errors.parent_site_url}>
                             {text('parent_site_url', { type: 'url' })}
                         </AdminField>

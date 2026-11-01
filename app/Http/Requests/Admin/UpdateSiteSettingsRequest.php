@@ -38,7 +38,6 @@ class UpdateSiteSettingsRequest extends FormRequest
             'emails' => ['required', 'array', 'min:1', 'max:5'],
             'emails.*' => ['email', 'max:190'],
 
-            'live_auctions_url' => ['required', 'url', 'max:255'],
             'parent_site_url' => ['nullable', 'url', 'max:255'],
             'facebook_url' => ['nullable', 'url', 'max:255'],
             'instagram_url' => ['nullable', 'url', 'max:255'],

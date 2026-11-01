@@ -18,7 +18,6 @@ class ContactEnquiryFactory extends Factory
     public function definition(): array
     {
         return [
-            'lot_id' => null,
             'name' => fake()->name(),
             'phone' => fake()->numerify('08########'),
             'email' => fake()->safeEmail(),

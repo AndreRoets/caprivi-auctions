@@ -25,7 +25,10 @@ export interface SharedData {
     name: string;
     quote: { message: string; author: string };
     auth: Auth;
-    flash: { success: string | null };
+    flash: { success: string | null; sell_response: string | null };
+    buyer: { email: string | null; name: string | null; phone: string | null } | null;
+    sellEnabled: boolean;
+    contactSubjects: string[];
     site: SiteSettings;
     seo?: SeoMeta;
     [key: string]: unknown;
@@ -41,7 +44,6 @@ export interface SiteSettings {
     extra_phones: string[];
     whatsapp: string | null;
     emails: string[];
-    live_auctions_url: string;
     parent_site_url: string | null;
     facebook_url: string | null;
     instagram_url: string | null;
@@ -57,38 +59,6 @@ export interface SeoMeta {
     image: string;
     url: string;
     type: string;
-}
-
-export type LotStatus = 'upcoming' | 'open' | 'closed' | 'sold';
-
-export interface Lot {
-    id: number;
-    web_ref: string;
-    slug: string;
-    title: string;
-    summary: string;
-    description: string;
-    property_type: string;
-    province: string;
-    city: string;
-    suburb: string;
-    address: string | null;
-    bedrooms: number | null;
-    bathrooms: number | null;
-    garages: number | null;
-    erf_size: number | null;
-    floor_size: number | null;
-    opening_bid: number;
-    monthly_rates: number | null;
-    monthly_levies: number | null;
-    auction_type: string;
-    status: LotStatus;
-    auctioneer: string;
-    bidding_opens_at: string | null;
-    bidding_closes_at: string | null;
-    bid_url: string | null;
-    image_url: string | null;
-    features: string[];
 }
 
 export interface User {

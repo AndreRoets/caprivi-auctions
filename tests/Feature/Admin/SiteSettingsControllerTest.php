@@ -27,7 +27,6 @@ class SiteSettingsControllerTest extends TestCase
             'extra_phones' => ['010 999 8888'],
             'whatsapp' => '068 452 2930',
             'emails' => ['hello@capriviauctions.co.za'],
-            'live_auctions_url' => 'https://bidpro.co.za',
             'parent_site_url' => null,
             'facebook_url' => 'https://facebook.com/capriviauctions',
             'instagram_url' => null,

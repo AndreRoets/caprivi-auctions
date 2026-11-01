@@ -1,18 +1,19 @@
+import { AuctionCard } from '@/components/auctions/auction-card';
 import CommissionCalculator from '@/components/site/commission-calculator';
-import Countdown from '@/components/site/countdown';
 import FaqList from '@/components/site/faq-list';
-import { StatusBadge } from '@/components/site/lot-card';
-import SellerQuestionnaire from '@/components/site/seller-questionnaire';
+import SellerQuestionnaireSection from '@/components/site/seller-questionnaire-section';
 import SiteLayout, { useContactModal } from '@/layouts/site-layout';
-import { auctionTypeLabels, formatDateTime, formatRand, telHref, useSite } from '@/lib/site';
-import { type Lot } from '@/types';
-import { Link } from '@inertiajs/react';
-import { CalendarClock, FileText, Gavel, ShieldCheck, TrendingUp, Users } from 'lucide-react';
+import { telHref, useSite } from '@/lib/site';
+import { type SharedData } from '@/types';
+import { type AuctionCard as AuctionCardData, type CorexSite } from '@/types/corex';
+import { Link, usePage } from '@inertiajs/react';
+import { CalendarClock, FileText, ShieldCheck, TrendingUp, Users } from 'lucide-react';
 import { ReactNode } from 'react';
 
 interface WelcomeProps {
-    featuredLot: Lot | null;
-    contactSubjects: string[];
+    corexSite: CorexSite | null;
+    liveAuctions: AuctionCardData[];
+    upcomingAuctions: AuctionCardData[];
 }
 
 const steps = [
@@ -84,6 +85,7 @@ function Section({
 
 function Hero() {
     const { openContact } = useContactModal();
+    const { sellEnabled } = usePage<SharedData>().props;
 
     return (
         <section className="bg-ink relative overflow-hidden text-white">
@@ -99,12 +101,21 @@ function Hero() {
                         plan – online, live, hybrid or sealed tender.
                     </p>
                     <div className="mt-8 flex flex-wrap gap-3">
-                        <a
-                            href="#questionnaire"
-                            className="bg-brass text-ink hover:bg-brass-dark rounded-full px-6 py-3 font-medium transition hover:text-white"
-                        >
-                            Start the seller questionnaire
-                        </a>
+                        {sellEnabled ? (
+                            <a
+                                href="#questionnaire"
+                                className="bg-brass text-ink hover:bg-brass-dark inline-flex min-h-11 items-center rounded-full px-6 font-medium transition hover:text-white"
+                            >
+                                Start the seller questionnaire
+                            </a>
+                        ) : (
+                            <Link
+                                href="/auctions"
+                                className="bg-brass text-ink hover:bg-brass-dark inline-flex min-h-11 items-center rounded-full px-6 font-medium transition hover:text-white"
+                            >
+                                View auctions
+                            </Link>
+                        )}
                         <button
                             type="button"
                             onClick={openContact}
@@ -134,65 +145,28 @@ function Hero() {
     );
 }
 
-function FeaturedLot({ lot }: { lot: Lot }) {
-    const facts: [string, string][] = [
-        ['Web ref', lot.web_ref],
-        ['Property', lot.property_type],
-        ['Location', `${lot.suburb}, ${lot.city}`],
-        ['Opening bid', formatRand(lot.opening_bid)],
-        ['Auctioneer', lot.auctioneer],
-    ];
+function AuctionsTeaser({ liveAuctions, upcomingAuctions }: { liveAuctions: AuctionCardData[]; upcomingAuctions: AuctionCardData[] }) {
+    const auctions = [...liveAuctions, ...upcomingAuctions].slice(0, 3);
+
+    if (auctions.length === 0) {
+        return null;
+    }
 
     return (
-        <Section eyebrow="Featured lot" title="On auction now">
-            <div className="grid overflow-hidden rounded-3xl bg-white shadow-lg lg:grid-cols-[1.3fr_1fr]">
-                <div className="p-8 sm:p-10">
-                    <div className="flex flex-wrap items-center gap-3">
-                        <StatusBadge status={lot.status} />
-                        <span className="text-brass-dark text-xs font-medium tracking-wider uppercase">
-                            {auctionTypeLabels[lot.auction_type] ?? lot.auction_type}
-                        </span>
-                    </div>
-                    <h3 className="font-display text-ink mt-4 text-3xl">{lot.title}</h3>
-                    <p className="mt-3 text-slate-600">{lot.summary}</p>
-                    <dl className="mt-6 grid grid-cols-2 gap-x-6 gap-y-4 sm:grid-cols-3">
-                        {facts.map(([label, value]) => (
-                            <div key={label}>
-                                <dt className="text-xs text-slate-500 uppercase">{label}</dt>
-                                <dd className="text-ink font-medium">{value}</dd>
-                            </div>
-                        ))}
-                    </dl>
-                </div>
-                <div className="bg-ink flex flex-col justify-between gap-6 p-8 text-white sm:p-10">
-                    <div>
-                        <p className="mb-3 text-sm text-white/60">Bidding closes in</p>
-                        <Countdown target={lot.bidding_closes_at} />
-                        <p className="mt-3 text-sm text-white/60">Closes {formatDateTime(lot.bidding_closes_at)}</p>
-                    </div>
-                    <div className="grid gap-3">
-                        {lot.bid_url && (
-                            <a
-                                href={lot.bid_url}
-                                target="_blank"
-                                rel="noopener"
-                                className="bg-brass text-ink flex items-center justify-center gap-2 rounded-full px-6 py-3 font-medium hover:bg-white"
-                            >
-                                <Gavel className="size-4" /> Bid on this lot
-                            </a>
-                        )}
-                        <Link
-                            href={route('lots.show', lot.slug)}
-                            className="rounded-full border border-white/30 px-6 py-3 text-center font-medium hover:bg-white/10"
-                        >
-                            View lot details
-                        </Link>
-                        <a href="#documents" className="text-brass text-center text-sm hover:underline">
-                            Auction documents
-                        </a>
-                    </div>
-                </div>
+        <Section
+            id="auctions"
+            eyebrow={liveAuctions.length > 0 ? 'Live now' : 'Coming up'}
+            title={liveAuctions.length > 0 ? 'Auctions open for bidding' : 'Upcoming auctions'}
+            intro="Create a free account, register for an auction and bid online once you are approved."
+        >
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {auctions.map((auction) => (
+                    <AuctionCard key={auction.id} auction={auction} />
+                ))}
             </div>
+            <Link href="/auctions" className="text-brass-dark mt-8 inline-flex min-h-11 items-center font-medium hover:underline">
+                See all auctions →
+            </Link>
         </Section>
     );
 }
@@ -230,16 +204,17 @@ function Documents() {
     );
 }
 
-export default function Welcome({ featuredLot, contactSubjects }: WelcomeProps) {
+export default function Welcome({ corexSite, liveAuctions, upcomingAuctions }: WelcomeProps) {
     const site = useSite();
+    const hasAuctions = liveAuctions.length + upcomingAuctions.length > 0;
 
     return (
-        <SiteLayout contactSubjects={contactSubjects}>
+        <SiteLayout>
             <Hero />
 
-            {featuredLot && <FeaturedLot lot={featuredLot} />}
+            <AuctionsTeaser liveAuctions={liveAuctions} upcomingAuctions={upcomingAuctions} />
 
-            <Section eyebrow="Why auction" title="Why sellers choose auction" className={featuredLot ? 'pt-0' : ''}>
+            <Section eyebrow="Why auction" title="Why sellers choose auction" className={hasAuctions ? 'pt-0' : ''}>
                 <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
                     {benefits.map(({ icon: Icon, title, body }) => (
                         <div key={title} className="border-sand-dark rounded-2xl border bg-white p-6">
@@ -251,14 +226,7 @@ export default function Welcome({ featuredLot, contactSubjects }: WelcomeProps) 
                 </div>
             </Section>
 
-            <Section
-                id="questionnaire"
-                eyebrow="Sell at auction"
-                title="Seller questionnaire"
-                intro="Seven short sections. Your answers build a live catalogue preview as you go, and you can move between sections at any time."
-            >
-                <SellerQuestionnaire />
-            </Section>
+            <SellerQuestionnaireSection corexSite={corexSite} />
 
             <Documents />
 

@@ -2,7 +2,6 @@
 
 namespace App\Support;
 
-use App\Models\Lot;
 use Illuminate\Support\Str;
 
 /**
@@ -27,13 +26,33 @@ class SeoMeta
     }
 
     /**
+     * @param  array<string, mixed>  $auction  a CoreX auction
      * @return array{title: string, description: string, image: string, url: string, type: string}
      */
-    public function forLot(Lot $lot): array
+    public function forAuction(array $auction): array
     {
-        $image = $lot->image_url ? (Str::startsWith($lot->image_url, ['http://', 'https://']) ? $lot->image_url : asset($lot->image_url)) : null;
+        return $this->make(
+            (string) ($auction['title'] ?? ''),
+            $this->plainText($auction['description'] ?? null),
+            $this->absoluteUrl($auction['image_url'] ?? null),
+        );
+    }
 
-        return $this->make($lot->title, $lot->summary, $image, 'article');
+    /**
+     * @param  array<string, mixed>  $lot  a CoreX lot
+     * @return array{title: string, description: string, image: string, url: string, type: string}
+     */
+    public function forCorexLot(array $lot): array
+    {
+        $place = implode(', ', array_filter([$lot['suburb'] ?? null, $lot['city'] ?? null]));
+        $title = trim(($lot['title'] ?? '').($place ? " – {$place}" : ''));
+
+        return $this->make(
+            $title,
+            $this->plainText($lot['description'] ?? null),
+            $this->absoluteUrl($lot['image_url'] ?? null),
+            'article',
+        );
     }
 
     /**
@@ -48,5 +67,23 @@ class SeoMeta
             'url' => url()->current(),
             'type' => $type,
         ];
+    }
+
+    private function plainText(mixed $value): ?string
+    {
+        if (! is_string($value) || trim($value) === '') {
+            return null;
+        }
+
+        return Str::squish(strip_tags($value));
+    }
+
+    private function absoluteUrl(mixed $url): ?string
+    {
+        if (! is_string($url) || $url === '') {
+            return null;
+        }
+
+        return Str::startsWith($url, ['http://', 'https://']) ? $url : asset($url);
     }
 }

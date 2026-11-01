@@ -186,13 +186,13 @@ export default function SeoSettingsPage({ settings, pages, imageUrl, hasCustomIm
                                 <SearchPreview
                                     title={`${meta.title} - ${site.company_name}`}
                                     description={meta.description}
-                                    url={page === 'home' ? origin : `${origin}/on-auction`}
+                                    url={page === 'home' ? origin : `${origin}/${page}`}
                                 />
                             </div>
                         );
                     })}
                     <p className="text-muted-foreground text-xs">
-                        Individual property pages use the property's own title, summary and photo automatically.
+                        Individual auction and lot pages use their own title, description and photo from CoreX automatically.
                     </p>
                 </section>
 

@@ -23,7 +23,7 @@ class SeoSettingsController extends Controller
                     'seo_description', 'seo_keywords', 'seo_allow_indexing', 'seo_twitter_handle',
                     'seo_google_verification', 'seo_bing_verification', 'seo_google_analytics_id', 'seo_google_tag_manager_id',
                 ]),
-                'seo_pages' => Arr::only($all['seo_pages'], array_keys(SiteSettings::SEO_PAGES)) + SiteSettings::defaults()['seo_pages'],
+                'seo_pages' => $all['seo_pages'],
             ],
             'pages' => SiteSettings::SEO_PAGES,
             'imageUrl' => $settings->seoImageUrl(),
