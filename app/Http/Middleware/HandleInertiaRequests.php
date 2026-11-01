@@ -2,6 +2,10 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\ContactEnquiry;
+use App\Support\Corex\BuyerSession;
+use App\Support\Corex\CorexClient;
+use App\Support\SiteSettings;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
@@ -41,9 +45,21 @@ class HandleInertiaRequests extends Middleware
         return array_merge(parent::share($request), [
             ...parent::share($request),
             'name' => config('app.name'),
+            'site' => fn () => [
+                ...app(SiteSettings::class)->contact(),
+                'phones' => app(SiteSettings::class)->phones(),
+            ],
             'quote' => ['message' => trim($message), 'author' => trim($author)],
             'auth' => [
                 'user' => $request->user(),
+            ],
+            'buyer' => fn () => app(BuyerSession::class)->buyer(),
+            'sellEnabled' => fn () => filled(app(CorexClient::class)->siteOrNull()['seller_questionnaire'] ?? null)
+                && (bool) (app(CorexClient::class)->siteOrNull()['features']['seller_questionnaire'] ?? false),
+            'contactSubjects' => ContactEnquiry::SUBJECTS,
+            'flash' => [
+                'success' => fn () => $request->session()->get('success'),
+                'sell_response' => fn () => $request->session()->get('sell_response'),
             ],
         ]);
     }

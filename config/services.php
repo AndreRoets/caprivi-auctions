@@ -28,6 +28,13 @@ return [
         'key' => env('RESEND_KEY'),
     ],
 
+    'corex' => [
+        'auctions_api' => rtrim((string) env('COREX_AUCTIONS_API', ''), '/'),
+        'api_key' => env('COREX_API_KEY'),
+        'timeout' => (int) env('COREX_TIMEOUT', 15),
+        'cache_seconds' => (int) env('COREX_CACHE_SECONDS', 180),
+    ],
+
     'slack' => [
         'notifications' => [
             'bot_user_oauth_token' => env('SLACK_BOT_USER_OAUTH_TOKEN'),

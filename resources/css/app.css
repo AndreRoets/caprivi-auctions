@@ -10,6 +10,15 @@
     --font-sans:
         'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 
+    --font-display: 'Fraunces', ui-serif, Georgia, serif;
+
+    --color-ink: #0e2235;
+    --color-ink-soft: #1b3550;
+    --color-brass: #c8963e;
+    --color-brass-dark: #a87a2a;
+    --color-sand: #f6f1e7;
+    --color-sand-dark: #ebe2d0;
+
     --radius-lg: var(--radius);
     --radius-md: calc(var(--radius) - 2px);
     --radius-sm: calc(var(--radius) - 4px);
