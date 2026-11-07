@@ -23,6 +23,7 @@ function useNavItems() {
 
     return [
         { label: 'Auctions', href: '/auctions' },
+        { label: 'Upcoming', href: '/auctions/upcoming' },
         ...(sellEnabled ? [{ label: 'Sell at auction', href: '/#questionnaire' }] : []),
         { label: 'Documents', href: '/#documents' },
         { label: 'Questions', href: '/#faq' },

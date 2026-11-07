@@ -58,7 +58,7 @@ export default function EnquiryForm({ action, heading }: { action: string; headi
                         autoComplete="email"
                     />
                 </Field>
-                <Field label="Phone" error={errors.phone} hint="Email or phone – at least one.">
+                <Field label="Phone" error={errors.phone}>
                     <input
                         type="tel"
                         className={inputClass}
@@ -67,6 +67,7 @@ export default function EnquiryForm({ action, heading }: { action: string; headi
                         autoComplete="tel"
                     />
                 </Field>
+                <p className="-mt-2 text-xs text-slate-500 sm:col-span-2">Email or phone – at least one.</p>
             </div>
             <Field label="Message (optional)" error={errors.message}>
                 <textarea rows={3} className={inputClass} value={data.message} onChange={(e) => setData('message', e.target.value)} />

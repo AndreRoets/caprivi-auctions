@@ -30,6 +30,17 @@ class AuctionController extends Controller
         ]);
     }
 
+    public function upcoming(SeoMeta $seo): Response
+    {
+        $site = $this->corex->siteOrNull();
+
+        return Inertia::render('auctions/upcoming', [
+            'corexSite' => $site,
+            'upcomingAuctions' => $site ? $this->corex->auctionsOrEmpty('upcoming') : [],
+            'seo' => $seo->forUpcomingAuctions(),
+        ]);
+    }
+
     public function show(string $auction, SeoMeta $seo): Response
     {
         $data = $this->corex->get("/{$auction}")['data'] ?? [];

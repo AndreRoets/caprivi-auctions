@@ -26,6 +26,17 @@ class SeoMeta
     }
 
     /**
+     * @return array{title: string, description: string, image: string, url: string, type: string}
+     */
+    public function forUpcomingAuctions(): array
+    {
+        return $this->make(
+            'Upcoming property auctions',
+            'See every upcoming property auction with Caprivi Auctions. Create a free account and register to bid before the auction opens.',
+        );
+    }
+
+    /**
      * @param  array<string, mixed>  $auction  a CoreX auction
      * @return array{title: string, description: string, image: string, url: string, type: string}
      */

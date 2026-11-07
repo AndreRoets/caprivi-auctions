@@ -33,6 +33,31 @@ class AuctionPagesTest extends TestCase
         Http::assertNotSent(fn (ClientRequest $request) => str_contains($request->url(), 'phase=finished'));
     }
 
+    public function test_upcoming_page_lists_only_upcoming_auctions(): void
+    {
+        $this->fakeCorex([
+            '?phase=upcoming' => Http::response(['data' => [$this->corexAuction(['id' => 13, 'phase' => 'upcoming'])]]),
+        ]);
+
+        $this->get(route('auctions.upcoming'))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('auctions/upcoming')
+                ->has('upcomingAuctions', 1)
+                ->where('upcomingAuctions.0.id', 13));
+
+        Http::assertNotSent(fn (ClientRequest $request) => str_contains($request->url(), 'phase=live'));
+    }
+
+    public function test_upcoming_page_renders_when_corex_is_not_configured(): void
+    {
+        Http::fake();
+
+        $this->get(route('auctions.upcoming'))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page->where('corexSite', null)->where('upcomingAuctions', []));
+    }
+
     public function test_index_includes_past_auctions_when_the_agency_shows_them(): void
     {
         $this->fakeCorex(['?phase=finished' => Http::response(['data' => [$this->corexAuction(['id' => 9, 'phase' => 'finished'])]])], ['site' => ['show_past_auctions' => true]]);

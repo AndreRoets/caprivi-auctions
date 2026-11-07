@@ -15,6 +15,21 @@ interface WelcomeProps {
     liveAuctions: AuctionCardData[];
     upcomingAuctions: AuctionCardData[];
     corexError: string | null;
+    documents: SiteDocumentData[];
+}
+
+interface SiteDocumentData {
+    id: number;
+    title: string;
+    description: string | null;
+    type: string;
+    size: number;
+    requires_login: boolean;
+    download_url: string;
+}
+
+function formatFileSize(bytes: number): string {
+    return bytes >= 1024 * 1024 ? `${(bytes / (1024 * 1024)).toFixed(1)} MB` : `${Math.max(1, Math.round(bytes / 1024))} KB`;
 }
 
 const steps = [
@@ -172,6 +187,41 @@ function AuctionsTeaser({ liveAuctions, upcomingAuctions }: { liveAuctions: Auct
     );
 }
 
+function UploadedDocuments({ documents }: { documents: SiteDocumentData[] }) {
+    const { buyer } = usePage<SharedData>().props;
+
+    return (
+        <Section
+            id="documents"
+            eyebrow="Auction documents"
+            title="Everything in writing, before you bid"
+            intro="Download the latest documents below. Some are only available to signed-in buyers."
+            className="bg-white"
+        >
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {documents.map((doc) => (
+                    <div key={doc.id} className="border-sand-dark flex items-start gap-4 rounded-2xl border p-5">
+                        <span className="bg-sand text-brass-dark flex size-11 shrink-0 items-center justify-center rounded-xl">
+                            <FileText className="size-5" />
+                        </span>
+                        <div className="flex-1">
+                            <p className="text-ink font-medium">{doc.title}</p>
+                            {doc.description && <p className="text-sm text-slate-600">{doc.description}</p>}
+                            <p className="text-xs text-slate-500">
+                                {doc.type} · {formatFileSize(doc.size)}
+                                {doc.requires_login && ' · Signed-in buyers only'}
+                            </p>
+                            <a href={doc.download_url} className="text-brass-dark mt-2 inline-block text-sm font-medium hover:underline">
+                                {doc.requires_login && !buyer ? 'Log in to download' : 'Download'}
+                            </a>
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </Section>
+    );
+}
+
 function Documents() {
     const { openContact } = useContactModal();
 
@@ -205,7 +255,7 @@ function Documents() {
     );
 }
 
-export default function Welcome({ corexSite, liveAuctions, upcomingAuctions, corexError }: WelcomeProps) {
+export default function Welcome({ corexSite, liveAuctions, upcomingAuctions, corexError, documents }: WelcomeProps) {
     const site = useSite();
     const hasAuctions = liveAuctions.length + upcomingAuctions.length > 0;
 
@@ -235,7 +285,7 @@ export default function Welcome({ corexSite, liveAuctions, upcomingAuctions, cor
 
             <SellerQuestionnaireSection corexSite={corexSite} />
 
-            <Documents />
+            {documents.length > 0 ? <UploadedDocuments documents={documents} /> : <Documents />}
 
             <Section
                 id="commission"

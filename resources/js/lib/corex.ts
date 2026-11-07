@@ -182,7 +182,7 @@ export function bidError(value: string, minNext: number): string | null {
         return 'Enter the amount you want to bid.';
     }
 
-    return amount < minNext ? `That is too low. Your bid must be at least ${formatRand(minNext)}.` : null;
+    return amount < minNext ? `Minimum bid ${formatRand(minNext)}` : null;
 }
 
 /* ─── Sell at auction questionnaire ─────────────────────────────────── */

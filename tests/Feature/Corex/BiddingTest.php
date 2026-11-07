@@ -53,6 +53,23 @@ class BiddingTest extends TestCase
             ->assertJsonPath('errors.form.0', 'Your bid must be at least R 280 000.');
     }
 
+    public function test_a_refused_bid_returns_the_fresh_bidding_state_from_corex(): void
+    {
+        $bidding = $this->corexBidding(['min_next' => 300000, 'increment' => 50000]);
+        $this->fakeCorex(['/lots/34/bids' => Http::response([
+            'message' => 'Your bid must be at least R 300 000.',
+            'errors' => ['amount' => ['Your bid must be at least R 300 000.']],
+            'data' => ['bidding' => $bidding, 'my_registration' => null, 'watching' => false],
+        ], 422)]);
+
+        $this->actingAsBuyer()
+            ->postJson(route('lots.bids.store', 34), ['amount' => 270000])
+            ->assertUnprocessable()
+            ->assertJsonPath('message', 'Your bid must be at least R 300 000.')
+            ->assertJsonPath('data.bidding.min_next', 300000)
+            ->assertJsonPath('data.bidding.increment', 50000);
+    }
+
     public function test_unapproved_bidders_are_told_they_need_an_approved_registration(): void
     {
         $this->fakeCorex(['/lots/34/bids' => Http::response(['message' => 'Registration pending (internal ref 99)'], 403)]);

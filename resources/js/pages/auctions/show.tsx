@@ -2,7 +2,7 @@ import { CoverImage, formatLabel, LotCard, PhasePill } from '@/components/auctio
 import DocumentList from '@/components/auctions/document-list';
 import EnquiryForm from '@/components/auctions/enquiry-form';
 import SiteLayout from '@/layouts/site-layout';
-import { formatDateTime } from '@/lib/corex';
+import { formatDateTime, formatRand } from '@/lib/corex';
 import { type SharedData } from '@/types';
 import { type AuctionDetail } from '@/types/corex';
 import { Link, usePage } from '@inertiajs/react';
@@ -175,6 +175,33 @@ export default function AuctionShow({ auction }: { auction: AuctionDetail }) {
                             </p>
                         )}
                     </section>
+
+                    {auction.bid_increments && auction.bid_increments.length > 0 && (
+                        <section className="border-sand-dark rounded-2xl border bg-white p-6" aria-labelledby="increments-heading">
+                            <h2 id="increments-heading" className="font-display text-ink text-xl">
+                                Bid increments
+                            </h2>
+                            <p className="mt-1 text-sm text-slate-600">From each price upward, a bid must go up by at least:</p>
+                            <table className="mt-4 w-full text-sm">
+                                <thead className="text-left text-slate-500">
+                                    <tr>
+                                        <th className="pb-2 font-medium">From</th>
+                                        <th className="pb-2 text-right font-medium">Bid goes up by</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-[var(--color-sand-dark)]">
+                                    {auction.bid_increments.map((row) => (
+                                        <tr key={row.from}>
+                                            <td className="py-2 whitespace-nowrap tabular-nums">{formatRand(row.from)}</td>
+                                            <td className="py-2 text-right font-medium whitespace-nowrap tabular-nums">
+                                                {formatRand(row.increment)}
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </section>
+                    )}
 
                     <section aria-labelledby="documents-heading">
                         <h2 id="documents-heading" className="font-display text-ink text-xl">

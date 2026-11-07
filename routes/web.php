@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\SeoSettingsController;
+use App\Http\Controllers\Admin\SiteDocumentController as AdminSiteDocumentController;
 use App\Http\Controllers\Admin\SiteSettingsController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\AuctionController;
@@ -14,6 +15,7 @@ use App\Http\Controllers\ContactEnquiryController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\SellAtAuctionController;
 use App\Http\Controllers\SeoFileController;
+use App\Http\Controllers\SiteDocumentController;
 use App\Http\Middleware\EnsureBuyerIsLoggedIn;
 use App\Http\Middleware\RedirectIfBuyerIsLoggedIn;
 use Illuminate\Support\Facades\Route;
@@ -29,10 +31,13 @@ Route::get('/', HomeController::class)->name('home');
 Route::get('robots.txt', [SeoFileController::class, 'robots'])->name('robots');
 Route::get('sitemap.xml', [SeoFileController::class, 'sitemap'])->name('sitemap');
 
+Route::get('documents/{siteDocument}', SiteDocumentController::class)->name('site-documents.download');
+
 Route::permanentRedirect('on-auction', '/auctions');
 
 Route::prefix('auctions')->name('auctions.')->group(function () {
     Route::get('/', [AuctionController::class, 'index'])->name('index');
+    Route::get('upcoming', [AuctionController::class, 'upcoming'])->name('upcoming');
     Route::get('{auction}', [AuctionController::class, 'show'])->name('show');
     Route::get('{auction}/lots/{lot}', [AuctionController::class, 'lot'])->name('lots.show');
     Route::get('{auction}/lots/{lot}/feed', [AuctionController::class, 'feed'])->middleware('throttle:120,1')->name('lots.feed');
@@ -94,6 +99,8 @@ Route::middleware(['auth'])->group(function () {
 
         Route::get('site-settings', [SiteSettingsController::class, 'edit'])->name('site-settings.edit');
         Route::put('site-settings', [SiteSettingsController::class, 'update'])->name('site-settings.update');
+
+        Route::resource('documents', AdminSiteDocumentController::class)->except('show')->parameters(['documents' => 'siteDocument']);
 
         Route::get('seo', [SeoSettingsController::class, 'edit'])->name('seo.edit');
         Route::post('seo', [SeoSettingsController::class, 'update'])->name('seo.update');

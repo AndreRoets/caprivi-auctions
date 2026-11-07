@@ -4,7 +4,7 @@ import { NavUser } from '@/components/nav-user';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { Building2, Globe, LayoutGrid, Search, Users } from 'lucide-react';
+import { Building2, FileText, Globe, LayoutGrid, Search, Users } from 'lucide-react';
 import AppLogo from './app-logo';
 
 const mainNavItems: NavItem[] = [
@@ -17,6 +17,11 @@ const mainNavItems: NavItem[] = [
         title: 'Website details',
         url: '/admin/site-settings',
         icon: Building2,
+    },
+    {
+        title: 'Documents',
+        url: '/admin/documents',
+        icon: FileText,
     },
     {
         title: 'SEO',

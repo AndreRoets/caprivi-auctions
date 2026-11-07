@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Support\Corex\CorexClient;
 use App\Support\Corex\CorexException;
+use App\Support\Corex\CorexRefusal;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -46,6 +47,14 @@ class BiddingController extends Controller
     {
         try {
             $result = $call();
+        } catch (CorexRefusal $refusal) {
+            $message = collect($refusal->errors())->flatten()->first() ?? 'Your bid could not be placed.';
+
+            return response()->json([
+                'message' => $message,
+                'errors' => $refusal->errors(),
+                'data' => $refusal->data,
+            ], 422);
         } catch (CorexException $exception) {
             if ($exception->errorCode === CorexException::FORBIDDEN) {
                 throw CorexException::forbidden('You need an approved registration for this auction before you can bid.');

@@ -86,6 +86,7 @@ export interface AuctionDetail extends AuctionCard {
     documents: CorexDocument[];
     hidden_documents: number | null;
     lots: LotCard[];
+    bid_increments?: BidIncrement[];
 }
 
 export type RegistrationStatus = 'pending' | 'approved' | 'declined' | string;
@@ -108,6 +109,13 @@ export interface RecentBid {
     mine: boolean;
 }
 
+export interface BidIncrement {
+    /** From this price upward... */
+    from: number;
+    /** ...each bid must go up by at least this much. */
+    increment: number;
+}
+
 export interface Bidding {
     lot_status: string | null;
     phase: 'upcoming' | 'open' | 'ended';
@@ -117,8 +125,10 @@ export interface Bidding {
     seconds_left: number | null;
     current_bid: number | null;
     opening_bid: number | null;
-    min_next: number;
+    /** Lowest bid allowed right now; null once bidding has ended. */
+    min_next: number | null;
     increment: number;
+    increments?: BidIncrement[];
     reserve: 'met' | 'not_met' | null;
     you: 'winning' | 'outbid' | 'none' | null;
     currency: string;

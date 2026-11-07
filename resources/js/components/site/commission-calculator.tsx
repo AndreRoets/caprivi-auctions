@@ -88,16 +88,16 @@ function Breakdown({ title, rows, totalLabel, total }: { title: string; rows: [s
                 {rows.map(([label, amount]) => (
                     <div key={label} className="flex justify-between gap-4">
                         <dt className="text-white/70">{label}</dt>
-                        <dd className="tabular-nums">
+                        <dd className="shrink-0 text-right whitespace-nowrap tabular-nums">
                             {amount < 0 ? '− ' : ''}
                             {formatRand(Math.abs(amount))}
                         </dd>
                     </div>
                 ))}
             </dl>
-            <div className="mt-auto flex items-end justify-between gap-4 border-t border-white/15 pt-4">
-                <span className="text-sm text-white/70">{totalLabel}</span>
-                <span className="font-display text-brass text-2xl tabular-nums">{formatRand(total)}</span>
+            <div className="mt-auto border-t border-white/15 pt-4">
+                <span className="block text-sm text-white/70">{totalLabel}</span>
+                <span className="font-display text-brass mt-1 block text-2xl whitespace-nowrap tabular-nums">{formatRand(total)}</span>
             </div>
         </div>
     );

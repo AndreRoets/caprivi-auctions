@@ -93,9 +93,10 @@ function BiddingClock({ lot, live, offsetMs }: Omit<BidCardProps, 'onUpdate'>) {
 
 function BidBox({ lot, live, onUpdate }: Omit<BidCardProps, 'offsetMs'>) {
     const { bidding } = live;
+    const minNext = bidding.min_next ?? 0;
     const inputId = useId();
     const autoId = useId();
-    const [amount, setAmount] = useState(() => groupThousands(bidding.min_next));
+    const [amount, setAmount] = useState(() => groupThousands(minNext));
     const [touched, setTouched] = useState(false);
     const [autoMax, setAutoMax] = useState('');
     const [busy, setBusy] = useState(false);
@@ -104,11 +105,11 @@ function BidBox({ lot, live, onUpdate }: Omit<BidCardProps, 'offsetMs'>) {
     // Follow the minimum next bid as others bid, until the visitor changes the amount.
     useEffect(() => {
         if (!touched) {
-            setAmount(groupThousands(bidding.min_next));
+            setAmount(groupThousands(minNext));
         }
-    }, [bidding.min_next, touched]);
+    }, [minNext, touched]);
 
-    const error = bidError(amount, bidding.min_next);
+    const error = bidError(amount, minNext);
 
     const run = async (request: () => Promise<{ data: LiveLotState | null }>, after?: () => void) => {
         setBusy(true);
@@ -121,6 +122,14 @@ function BidBox({ lot, live, onUpdate }: Omit<BidCardProps, 'offsetMs'>) {
             after?.();
         } catch (failure) {
             handleFailure(failure, setMessage);
+            const refused = failure as SiteFetchError;
+            const fresh = refused.status === 422 ? (refused.data as Partial<LiveLotState> | null | undefined) : null;
+            if (fresh?.bidding) {
+                // Never retry the refused amount: take the new minimum and step from CoreX.
+                onUpdate(fresh);
+                setTouched(false);
+                setAmount(groupThousands(fresh.bidding.min_next ?? 0));
+            }
         } finally {
             setBusy(false);
         }
@@ -128,7 +137,7 @@ function BidBox({ lot, live, onUpdate }: Omit<BidCardProps, 'offsetMs'>) {
 
     const placeBid: FormEventHandler = (event) => {
         event.preventDefault();
-        if (bidError(amount, bidding.min_next)) {
+        if (bidError(amount, minNext)) {
             setTouched(true);
 
             return;
@@ -161,6 +170,7 @@ function BidBox({ lot, live, onUpdate }: Omit<BidCardProps, 'offsetMs'>) {
                         aria-describedby={error ? `${inputId}-error` : undefined}
                     />
                 </div>
+                {bidding.increment > 0 && <p className="text-xs text-slate-500">Bids go up by at least {formatRand(bidding.increment)}.</p>}
                 {error && (
                     <p id={`${inputId}-error`} className="text-sm font-medium text-red-600">
                         {error}
@@ -173,7 +183,7 @@ function BidBox({ lot, live, onUpdate }: Omit<BidCardProps, 'offsetMs'>) {
                             type="button"
                             onClick={() => {
                                 setTouched(true);
-                                setAmount(groupThousands(addToBid(amount, bidding.min_next, step)));
+                                setAmount(groupThousands(addToBid(amount, minNext, step)));
                             }}
                             className="border-sand-dark hover:border-ink min-h-11 rounded-full border bg-white px-3 text-sm font-medium tabular-nums"
                         >
@@ -184,7 +194,7 @@ function BidBox({ lot, live, onUpdate }: Omit<BidCardProps, 'offsetMs'>) {
                         type="button"
                         onClick={() => {
                             setTouched(false);
-                            setAmount(groupThousands(bidding.min_next));
+                            setAmount(groupThousands(minNext));
                         }}
                         className="border-sand-dark hover:border-ink min-h-11 rounded-full border bg-white px-3 text-sm font-medium"
                     >
@@ -222,8 +232,8 @@ function BidBox({ lot, live, onUpdate }: Omit<BidCardProps, 'offsetMs'>) {
                         onSubmit={(event) => {
                             event.preventDefault();
                             const max = stripNumber(autoMax);
-                            if (max === null || max < bidding.min_next) {
-                                setMessage(`Your maximum must be at least ${formatRand(bidding.min_next)}.`);
+                            if (max === null || max < minNext) {
+                                setMessage(`Minimum bid ${formatRand(minNext)}`);
 
                                 return;
                             }
@@ -239,15 +249,15 @@ function BidBox({ lot, live, onUpdate }: Omit<BidCardProps, 'offsetMs'>) {
                         <input
                             id={autoId}
                             inputMode="numeric"
-                            placeholder={`e.g. ${groupThousands(bidding.min_next + bidding.increment * 5)}`}
+                            placeholder={`e.g. ${groupThousands(minNext + bidding.increment * 5)}`}
                             className="focus:border-brass focus:ring-brass/30 min-h-11 w-full rounded-full border border-slate-300 bg-white px-4 text-sm tabular-nums outline-none focus:ring-2"
                             value={autoMax}
                             onChange={(event) => setAutoMax(formatAmountInput(event.target.value))}
                         />
                         <button
                             type="submit"
-                            disabled={busy}
-                            className="border-ink text-ink hover:bg-ink min-h-11 shrink-0 rounded-full border px-4 text-sm font-medium hover:text-white"
+                            disabled={busy || (stripNumber(autoMax) ?? 0) < minNext}
+                            className="border-ink text-ink hover:bg-ink min-h-11 shrink-0 rounded-full border px-4 text-sm font-medium hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
                         >
                             Set
                         </button>

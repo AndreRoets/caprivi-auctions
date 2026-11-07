@@ -41,12 +41,14 @@ function AuctionSection({
     title,
     intro,
     auctions,
+    viewAllHref,
     children,
 }: {
     id: string;
     title: string;
     intro?: string;
     auctions: AuctionCardData[];
+    viewAllHref?: string;
     children?: ReactNode;
 }) {
     return (
@@ -56,6 +58,11 @@ function AuctionSection({
                     {title}
                 </h2>
                 {intro && <p className="mt-2 text-slate-600">{intro}</p>}
+                {viewAllHref && auctions.length > 0 && (
+                    <Link href={viewAllHref} className="text-brass-dark mt-2 inline-flex min-h-11 items-center font-medium hover:underline">
+                        View all upcoming auctions →
+                    </Link>
+                )}
                 {auctions.length > 0 ? (
                     <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                         {auctions.map((auction) => (
@@ -167,7 +174,7 @@ export default function AuctionsIndex({ corexSite, liveAuctions, upcomingAuction
                         <p className="mt-4 text-slate-600">No auctions are open for bidding right now. See what is coming up below.</p>
                     </AuctionSection>
 
-                    <AuctionSection id="upcoming" title="Coming up" auctions={upcomingAuctions}>
+                    <AuctionSection id="upcoming" title="Coming up" auctions={upcomingAuctions} viewAllHref="/auctions/upcoming">
                         <p className="mt-4 text-slate-600">New auctions are announced here. Create a free account so you are ready to register.</p>
                     </AuctionSection>
 

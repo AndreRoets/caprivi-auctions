@@ -31,6 +31,7 @@ class SeoFileController extends Controller
         $urls = [
             ['loc' => route('home'), 'priority' => '1.0'],
             ['loc' => route('auctions.index'), 'priority' => '0.9'],
+            ['loc' => route('auctions.upcoming'), 'priority' => '0.8'],
         ];
 
         $phases = ['live' => '0.8', 'upcoming' => '0.8'];

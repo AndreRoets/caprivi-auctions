@@ -54,6 +54,7 @@ export async function siteFetch<T>(url: string, init: { method?: string; body?: 
                     : (firstError ?? body.message ?? 'Something went wrong. Please try again.'),
             errors,
             loginUrl: body.login_url as string | undefined,
+            data: body.data,
         } satisfies SiteFetchError;
     }
 
@@ -65,4 +66,6 @@ export interface SiteFetchError {
     message: string;
     errors: Record<string, string[]>;
     loginUrl?: string;
+    /** The fresh live state CoreX sends with a refused bid. */
+    data?: unknown;
 }

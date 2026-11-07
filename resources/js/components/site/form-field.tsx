@@ -13,7 +13,7 @@ interface FieldProps {
 
 export function Field({ label, error, hint, children, className }: FieldProps) {
     return (
-        <label className={`grid gap-1.5 text-sm ${className ?? ''}`}>
+        <label className={`grid content-start gap-1.5 text-sm ${className ?? ''}`}>
             <span className="font-medium text-slate-700">{label}</span>
             {children}
             {hint && !error && <span className="text-xs text-slate-500">{hint}</span>}

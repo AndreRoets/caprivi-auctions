@@ -10,7 +10,6 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
@@ -272,9 +271,14 @@ class CorexClient
             $errors = $response->json('errors');
             $message = $response->json('message');
 
-            throw ValidationException::withMessages(is_array($errors) && $errors !== []
-                ? $errors
-                : ['form' => is_string($message) && $message !== '' ? $message : 'Please check the details and try again.']);
+            $data = $response->json('data');
+
+            throw CorexRefusal::fromResponse(
+                is_array($errors) && $errors !== []
+                    ? $errors
+                    : ['form' => is_string($message) && $message !== '' ? $message : 'Please check the details and try again.'],
+                is_array($data) ? $data : null,
+            );
         }
 
         if ($status === 429) {
